@@ -10,7 +10,6 @@ import numpy as np
 
 game = rg.Robogame("bob")
 game.setReady()
-game.getGameTime()
 
 while(True):
     gametime = game.getGameTime()
