@@ -27,7 +27,7 @@ while(True):
     print("waiting to launch... game will start in " + str(int(timetogo)))
     time.sleep(1)
 
-def make_viz(text):
+def make_viz(node):
     game.getHints()
     robots = game.getRobotInfo()
     hints = game.getAllPredictionHints()
@@ -37,28 +37,32 @@ def make_viz(text):
     prod = robots[robots.Productivity >0]
     unprod = robots[robots.Productivity < 0]
 
-    selection = alt.selection_single(fields=['id'], bind=text)
-
-    line = alt.Chart(hints_df).mark_line().encode(
-    x=alt.X('time:Q'),
-    y=alt.Y('value:Q'),
-    color = 'id:N'
+    line = alt.Chart(hints_df).mark_line().transform_filter(
+        alt.datum['id'] == node
+    ).encode(
+        x=alt.X('time:Q'),
+        y=alt.Y('value:Q'),
+        color = 'id:N'
     ).properties(
         width=800,
         height=500
-    ).transform_filter(selection)
+    )
 
-    circles = alt.Chart(hints_df).mark_point().encode(
+    circles = alt.Chart(hints_df).mark_point().transform_filter(
+        alt.datum['id'] == node
+    ).encode(
         x=alt.X('time:Q'),
         y=alt.Y('value:Q'),
         color = 'id:N',
         tooltip = ['id', 'time', 'value']
-    ).transform_filter(selection)
+    )
 
-    v_line = alt.Chart(robots).mark_rule(color='black').encode(
+    v_line = alt.Chart(robots).mark_rule(color='black').transform_filter(
+        alt.datum['id'] == node
+    ).encode(
         x='expires',
         tooltip = ['id', 'expires']
-    ).transform_filter(selection)
+    )
 
     lines = alt.layer(line, circles, v_line)
     return lines
@@ -67,12 +71,8 @@ if "visibility" not in st.session_state:
     st.session_state.visibility = "visible"
     st.session_state.disabled = False
 
-text_input = st.text_input(
-        "ID for Line graph",
-        "0",
-        key="linegraphtext",
-    )
+node_num = st.number_input("Enter Robot ID of Interest: ", step = 1)
 
 
-viz1 = make_viz(text_input)
+viz1 = make_viz(node_num)
 viz1
