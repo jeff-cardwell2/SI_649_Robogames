@@ -3,7 +3,6 @@ import pandas as pd
 import streamlit as st
 
 import Robogame as rg
-import networkx as nx
 import altair as alt
 import time, json
 import pandas as pd
